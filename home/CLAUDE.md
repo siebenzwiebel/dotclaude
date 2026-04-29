@@ -9,7 +9,7 @@
 
 **Regel:** Wird lokal eine inline-getrackte Datei in `~/.claude/` geändert, **muss** die Änderung in den Repo-Checkout kopiert, committet und gepusht werden — sonst veraltet das Repo. Vor dem Committen: `cd <repo> && git status`. Pushen nur nach expliziter User-Bestätigung.
 
-**Skills/Plugins/Repos hinzufügen oder kuratieren:** über den `dotclaude-lab` Skill — `/dotclaude-lab list|try|add|promote|demote|remove|update`. Niemals von Hand in `~/.claude/skills/` rumeditieren wenn das Ziel ein registrierter Upstream-Skill ist; stattdessen `registry.json` ändern und `update` laufen lassen.
+**Skills/Plugins/Repos hinzufügen oder kuratieren:** über den `dotclaude-lab` Skill — `/dotclaude-lab list|try|add|recommend|promote|demote|remove|update`. Drei Stati: `required` (überall auto-installiert), `recommended` (per `--with-recommended` opt-in), `optional` (nur lab/`try`). Mutationen werden committet und (sofern `settings.autoPush` in `registry.json` nicht abgeschaltet ist) auch gepusht. Niemals von Hand in `~/.claude/skills/` rumeditieren wenn das Ziel ein registrierter Upstream-Skill ist; stattdessen `registry.json` ändern und `update` laufen lassen.
 
 ## Read-before-Edit (Token-Sparregel)
 Vor jedem `Edit` oder `Write` auf eine bestehende Datei muss diese zuerst mit `Read` gelesen werden. Vor Änderungen an einer Funktion/Methode/Export: mit `Grep` alle Aufrufer suchen. Research vor Edit — blindes Editieren führt zu Retries und verbrannten Tokens. Angestrebtes Verhältnis: mindestens 4 Reads pro Edit.

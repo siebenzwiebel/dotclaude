@@ -5,18 +5,20 @@ machine, run the installer, and the new Claude instance has the same `CLAUDE.md`
 settings, commands, plus all required skills/plugins/repos pulled from their
 upstream sources (so you actually get updates).
 
-Optional entries live in the same registry but are not auto-installed — you
-manage them in-session via the `dotclaude-lab` skill (`/dotclaude-lab list`,
-`try`, `promote`, ...).
+Optional and recommended entries live in the same registry but are not
+auto-installed by default — manage them in-session via the `dotclaude-lab`
+skill (`/dotclaude-lab list`, `try`, `recommend`, `promote`, ...).
 
 ## Install on a new machine
 
 ```bash
 git clone <this-repo> ~/dotclaude
 cd ~/dotclaude
-./install.sh          # Linux / macOS / Git-Bash / WSL
+./install.sh                       # Linux / macOS / Git-Bash / WSL
+./install.sh --with-recommended    # also pull "recommended" entries
 # or on Windows PowerShell:
 ./install.ps1
+./install.ps1 -WithRecommended     # also pull "recommended" entries
 ```
 
 Alternatively just clone and tell Claude: *"set this up"* — it reads
@@ -45,9 +47,18 @@ session/history/cache data, the `plugins/` directory itself, and the
 
 ## Registry
 
-`registry.json` is the single source of truth. Each entry has `status: required`
-(installed by `install.sh`) or `status: optional` (installed on demand via the
-lab skill).
+`registry.json` is the single source of truth. Each entry has one of three
+statuses:
+
+| Status | Auto-installed? | Use case |
+|---|---|---|
+| `required` | always (`install.sh`) | core stack — every machine needs it |
+| `recommended` | only with `--with-recommended` (or `DOTCLAUDE_INCLUDE_RECOMMENDED=1`) | curated suggestion — opt-in per machine |
+| `optional` | never (lab only — install via `try`) | on-the-shelf for experimentation |
+
+Top-level `settings.autoPush` (default `true`) controls whether `dotclaude-lab`
+mutations are pushed to the remote automatically. Set it to `false` to keep
+commits local. Per-call override: `DOTCLAUDE_AUTOPUSH=0`.
 
 Entry shapes per bucket:
 
@@ -70,16 +81,18 @@ in any Claude Code session:
 | Command | Effect |
 |---------|--------|
 | `/dotclaude-lab list` | Show all entries with status and install state |
-| `/dotclaude-lab try <name>` | Install an optional entry locally to test it (no commit) |
+| `/dotclaude-lab try <name>` | Install a non-required entry locally to test it (no commit) |
 | `/dotclaude-lab untry <name>` | Remove a test installation |
-| `/dotclaude-lab add <type> <ref> [--description ...]` | Add a new optional entry, commit |
-| `/dotclaude-lab promote <name>` | Flip optional → required, commit |
-| `/dotclaude-lab demote <name>` | Flip required → optional, commit |
+| `/dotclaude-lab add <type> <ref> [--status ...] [--description ...]` | Add a new entry (default optional), commit |
+| `/dotclaude-lab recommend <name>` | Set `recommended`, commit |
+| `/dotclaude-lab promote <name>` | Step up: optional → recommended → required, commit |
+| `/dotclaude-lab demote <name>` | Step down: required → recommended → optional, commit |
 | `/dotclaude-lab remove <name>` | Delete entry from registry, commit |
-| `/dotclaude-lab update [<name>]` | Pull upstream updates for required entries |
+| `/dotclaude-lab update [<name>]` | Pull upstream updates for installed entries |
 
-Promote/demote/add/remove only mutate `registry.json` and commit — pushing is
-your call.
+All mutations commit `registry.json` and (by default) auto-push to the remote
+so other machines see the change. Disable via `settings.autoPush: false` in
+`registry.json` or per-call via `DOTCLAUDE_AUTOPUSH=0`.
 
 ## Updating from a machine
 

@@ -19,11 +19,16 @@ If the user clones this repo onto a new machine and asks you to "set it up",
      - plugins (`claude plugin install <name>@<marketplace>`)
      - repos (own `install_cmd_*` if defined, else `git clone` into cache)
      - npm globals (`npm install -g <name>`)
-   - Entries with `status: optional` are **not** auto-installed.
+   - Entries with `status: recommended` are installed **only** when the user
+     passes `--with-recommended` to `install.sh` (or `-WithRecommended` to
+     `install.ps1`), or sets `DOTCLAUDE_INCLUDE_RECOMMENDED=1` in the env.
+     Ask the user before passing the flag if it's unclear.
+   - Entries with `status: optional` are **never** auto-installed.
 
 3. After install, tell the user to **restart Claude Code** so the new settings,
    commands, skills, hooks and plugins are picked up. Mention they can manage
-   the optional list and update upstream skills via `/dotclaude-lab list|try|promote|update`.
+   the lab and update upstream skills via
+   `/dotclaude-lab list|try|recommend|promote|update`.
 
 ## What is tracked vs. not
 
@@ -50,5 +55,8 @@ respective package CLI.
 ## Managing the registry from inside Claude Code
 
 The `dotclaude-lab` skill provides commands for the user (and you, on their
-behalf): `list`, `try`, `untry`, `add`, `promote`, `demote`, `remove`, `update`.
-Read `home/skills/dotclaude-lab/SKILL.md` for the full semantics.
+behalf): `list`, `try`, `untry`, `add`, `recommend`, `promote`, `demote`,
+`remove`, `update`. Read `home/skills/dotclaude-lab/SKILL.md` for the full
+semantics, including the three-status model
+(`required` / `recommended` / `optional`) and the auto-push behavior controlled
+by `settings.autoPush` in `registry.json`.

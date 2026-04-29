@@ -1,7 +1,20 @@
-# Installs Claude Code dotfiles into $env:USERPROFILE\.claude and provisions required
-# skills/plugins/repos from registry.json. Idempotent: safe to re-run.
-# status=optional entries are NEVER auto-installed — manage via /dotclaude-lab in Claude Code.
+# Installs Claude Code dotfiles into $env:USERPROFILE\.claude and provisions skills/plugins/repos
+# from registry.json. Idempotent: safe to re-run.
+#
+# Status semantics:
+#   required    — always auto-installed.
+#   recommended — opt-in via -WithRecommended (or $env:DOTCLAUDE_INCLUDE_RECOMMENDED=1).
+#   optional    — never auto-installed; manage via /dotclaude-lab try|promote|...
+[CmdletBinding()]
+param(
+    [switch]$WithRecommended
+)
 $ErrorActionPreference = "Stop"
+
+$IncludeRecommended = $WithRecommended.IsPresent -or ($env:DOTCLAUDE_INCLUDE_RECOMMENDED -eq "1")
+function ShouldInstall($status) {
+    return ($status -eq "required") -or ($IncludeRecommended -and $status -eq "recommended")
+}
 
 $RepoDir  = $PSScriptRoot
 $Target   = if ($env:CLAUDE_HOME) { $env:CLAUDE_HOME } else { Join-Path $env:USERPROFILE ".claude" }
@@ -12,6 +25,7 @@ $Registry = Join-Path $RepoDir "registry.json"
 
 Write-Host "==> Repo:   $RepoDir"
 Write-Host "==> Target: $Target"
+if ($IncludeRecommended) { Write-Host "==> Including 'recommended' entries" }
 
 New-Item -ItemType Directory -Force -Path $Target, $Backup, $Cache, (Join-Path $Target "skills") | Out-Null
 
@@ -46,10 +60,10 @@ if ($claude) {
         & claude plugin marketplace add $m.name $ref 2>$null
     }
 
-    # ---------- 3. Install required plugins ----------
-    Write-Host "==> Installing required plugins"
+    # ---------- 3. Install plugins ----------
+    Write-Host "==> Installing plugins"
     foreach ($p in @($reg.plugins)) {
-        if ($p.status -ne "required") { continue }
+        if (-not (ShouldInstall $p.status)) { continue }
         $id = "$($p.name)@$($p.marketplace)"
         Write-Host "  plugin: $id"
         & claude plugin install $id 2>$null
@@ -58,10 +72,10 @@ if ($claude) {
     Write-Host "!! claude CLI not found — skipping marketplaces and plugins."
 }
 
-# ---------- 4. Install required skills ----------
-Write-Host "==> Installing required skills"
+# ---------- 4. Install skills ----------
+Write-Host "==> Installing skills"
 foreach ($s in @($reg.skills)) {
-    if ($s.status -ne "required") { continue }
+    if (-not (ShouldInstall $s.status)) { continue }
     Write-Host "  skill: $($s.name) ($($s.type))"
     $cacheDir = Join-Path $Cache "skills\$($s.name)"
     $dest     = Join-Path $Target "skills\$($s.name)"
@@ -106,10 +120,10 @@ foreach ($s in @($reg.skills)) {
     }
 }
 
-# ---------- 5. Install required repos ----------
-Write-Host "==> Installing required repos"
+# ---------- 5. Install repos ----------
+Write-Host "==> Installing repos"
 foreach ($r in @($reg.repos)) {
-    if ($r.status -ne "required") { continue }
+    if (-not (ShouldInstall $r.status)) { continue }
     Write-Host "  repo: $($r.name)"
     if ($r.install_cmd_windows) {
         try { Invoke-Expression $r.install_cmd_windows } catch { Write-Host "    !! install_cmd failed: $_" }
@@ -123,11 +137,11 @@ foreach ($r in @($reg.repos)) {
     }
 }
 
-# ---------- 6. Install required global npm packages ----------
+# ---------- 6. Install global npm packages ----------
 if ($npm) {
-    Write-Host "==> Installing required npm globals"
+    Write-Host "==> Installing npm globals"
     foreach ($pkg in @($reg.npm_globals)) {
-        if ($pkg.status -ne "required") { continue }
+        if (-not (ShouldInstall $pkg.status)) { continue }
         Write-Host "  npm: $($pkg.name)"
         & npm install -g $pkg.name 2>$null
     }

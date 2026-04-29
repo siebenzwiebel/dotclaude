@@ -1,9 +1,31 @@
 #!/usr/bin/env bash
-# Installs Claude Code dotfiles into ~/.claude and provisions required skills/plugins/repos
+# Installs Claude Code dotfiles into ~/.claude and provisions skills/plugins/repos
 # from registry.json. Idempotent: safe to re-run. Existing files backed up to
-# ~/.claude/backups/dotclaude-<timestamp>/. Status=optional entries are NEVER auto-installed —
-# manage them via the dotclaude-lab skill (/dotclaude-lab list|try|promote|...).
+# ~/.claude/backups/dotclaude-<timestamp>/.
+#
+# Status semantics:
+#   required    — always auto-installed.
+#   recommended — opt-in via --with-recommended (or DOTCLAUDE_INCLUDE_RECOMMENDED=1).
+#   optional    — never auto-installed; manage via /dotclaude-lab try|promote|...
 set -euo pipefail
+
+INCLUDE_RECOMMENDED="${DOTCLAUDE_INCLUDE_RECOMMENDED:-0}"
+for arg in "$@"; do
+  case "$arg" in
+    --with-recommended) INCLUDE_RECOMMENDED=1 ;;
+    -h|--help)
+      cat <<EOF
+Usage: install.sh [--with-recommended]
+
+  --with-recommended   Also install entries with status "recommended"
+                       (default: only "required" entries are auto-installed).
+EOF
+      exit 0
+      ;;
+    *) echo "!! unknown argument: $arg" >&2; exit 2 ;;
+  esac
+done
+export DOTCLAUDE_INCLUDE_RECOMMENDED="$INCLUDE_RECOMMENDED"
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET="${CLAUDE_HOME:-$HOME/.claude}"
@@ -14,6 +36,9 @@ REGISTRY="$REPO_DIR/registry.json"
 
 echo "==> Repo:   $REPO_DIR"
 echo "==> Target: $TARGET"
+if [ "$INCLUDE_RECOMMENDED" = "1" ]; then
+  echo "==> Including 'recommended' entries"
+fi
 
 mkdir -p "$TARGET" "$BACKUP" "$CACHE" "$TARGET/skills"
 
@@ -42,6 +67,10 @@ fi
 
 read_json() { node -e "$1" "$REGISTRY"; }
 
+# Status filter: required is always installed; recommended only if INCLUDE_RECOMMENDED=1.
+# Both install scripts and dotclaude-lab use this same predicate (kept inline in JS).
+JS_SHOULD_INSTALL='const includeRec = process.env.DOTCLAUDE_INCLUDE_RECOMMENDED === "1"; const shouldInstall = (s) => s === "required" || (includeRec && s === "recommended");'
+
 # ---------- 2. Register marketplaces ----------
 if command -v claude >/dev/null 2>&1; then
   echo "==> Registering marketplaces"
@@ -57,12 +86,13 @@ if command -v claude >/dev/null 2>&1; then
     claude plugin marketplace add "$name" "$ref" 2>/dev/null || true
   done
 
-  # ---------- 3. Install required plugins ----------
-  echo "==> Installing required plugins"
-  read_json '
+  # ---------- 3. Install plugins ----------
+  echo "==> Installing plugins"
+  read_json "
+    $JS_SHOULD_INSTALL
     const r = require(process.argv[1]);
-    for (const p of r.plugins || []) if (p.status === "required") console.log(`${p.name}@${p.marketplace}`);
-  ' | while read -r id; do
+    for (const p of r.plugins || []) if (shouldInstall(p.status)) console.log(\`\${p.name}@\${p.marketplace}\`);
+  " | while read -r id; do
     [ -z "$id" ] && continue
     echo "  plugin: $id"
     claude plugin install "$id" 2>/dev/null || true
@@ -71,14 +101,15 @@ else
   echo "!! claude CLI not found — skipping marketplaces and plugins."
 fi
 
-# ---------- 4. Install required skills (dispatch by type) ----------
-echo "==> Installing required skills"
-read_json '
+# ---------- 4. Install skills (dispatch by type) ----------
+echo "==> Installing skills"
+read_json "
+  $JS_SHOULD_INSTALL
   const r = require(process.argv[1]);
-  for (const s of r.skills || []) if (s.status === "required") {
-    console.log([s.name, s.type, s.ref || "", s.subpath || "", s.skill || ""].join("\t"));
+  for (const s of r.skills || []) if (shouldInstall(s.status)) {
+    console.log([s.name, s.type, s.ref || '', s.subpath || '', s.skill || ''].join('\t'));
   }
-' | while IFS=$'\t' read -r name type ref subpath skill; do
+" | while IFS=$'\t' read -r name type ref subpath skill; do
   [ -z "$name" ] && continue
   echo "  skill: $name ($type)"
   case "$type" in
@@ -124,14 +155,15 @@ read_json '
   esac
 done
 
-# ---------- 5. Install required repos ----------
-echo "==> Installing required repos"
-read_json '
+# ---------- 5. Install repos ----------
+echo "==> Installing repos"
+read_json "
+  $JS_SHOULD_INSTALL
   const r = require(process.argv[1]);
-  for (const e of r.repos || []) if (e.status === "required") {
-    console.log([e.name, e.url || "", e.install_cmd_unix || ""].join("\t"));
+  for (const e of r.repos || []) if (shouldInstall(e.status)) {
+    console.log([e.name, e.url || '', e.install_cmd_unix || ''].join('\t'));
   }
-' | while IFS=$'\t' read -r name url cmd; do
+" | while IFS=$'\t' read -r name url cmd; do
   [ -z "$name" ] && continue
   echo "  repo: $name"
   if [ -n "$cmd" ]; then
@@ -146,13 +178,14 @@ read_json '
   fi
 done
 
-# ---------- 6. Install required global npm packages ----------
+# ---------- 6. Install global npm packages ----------
 if command -v npm >/dev/null 2>&1; then
-  echo "==> Installing required npm globals"
-  read_json '
+  echo "==> Installing npm globals"
+  read_json "
+    $JS_SHOULD_INSTALL
     const r = require(process.argv[1]);
-    for (const p of r.npm_globals || []) if (p.status === "required") console.log(p.name);
-  ' | while read -r pkg; do
+    for (const p of r.npm_globals || []) if (shouldInstall(p.status)) console.log(p.name);
+  " | while read -r pkg; do
     [ -z "$pkg" ] && continue
     echo "  npm: $pkg"
     npm install -g "$pkg" 2>/dev/null || true
