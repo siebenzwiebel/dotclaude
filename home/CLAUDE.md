@@ -1,12 +1,15 @@
 # Globale Claude Code Anweisungen
 
 ## Dotclaude-Repo (Selbstpflege)
-Diese Datei und der gesamte Inhalt von `~/.claude/` werden im Git-Repo `http://git.drewers.dev/Steven/dotclaude` gepflegt. Lokaler Checkout: `~/claude-dotfiles/`. Das Mapping ist: `~/claude-dotfiles/home/<x>` ⇄ `~/.claude/<x>` (siehe `install.sh`).
+`~/.claude/` wird über das dotclaude-Repo gepflegt. Lokaler Checkout: `$DOTCLAUDE_REPO` falls gesetzt, sonst `~/dotclaude` oder `~/claude-dotfiles`. Mapping inline-getrackter Dateien: `<repo>/home/<x>` ⇄ `~/.claude/<x>`.
 
-**Regel:** Sobald lokal an einer Datei unter `~/.claude/` etwas geändert wird, die im Repo (`~/claude-dotfiles/home/`) getrackt ist, **muss** die Änderung dorthin kopiert, committet und gepusht werden — sonst veraltet das Repo. Vor dem Committen: `cd ~/claude-dotfiles && git status` prüfen, dann gezielt die geänderten Pfade stagen. Pushen nur nach expliziter User-Bestätigung (Standardregel), außer der User hat das Syncen explizit mitbeauftragt.
+**Inline getrackt** (kommen via `git pull` + `./install.sh`): `CLAUDE.md`, `settings.json`, `.omc-config.json`, `commands/`, `skills/dotclaude-lab/`, `hud/`.
 
-Getrackte Beispiele: `CLAUDE.md`, `settings.json`, `commands/`, `hooks/`, `skills/`, `hud/`, `.omc-config.json`.
-Nicht getrackt: Dateien außerhalb von `~/.claude/` (z. B. `~/.bashrc`) — dafür ist separat ein Ziel zu klären, falls sie versioniert werden sollen.
+**Per Registry referenziert** (kommen via `claude plugin install` / `git clone` / `npm i -g`): alle Skills, Plugins, Repos und npm-Globals in `<repo>/registry.json`. Updates dieser Sachen laufen über `/dotclaude-lab update`.
+
+**Regel:** Wird lokal eine inline-getrackte Datei in `~/.claude/` geändert, **muss** die Änderung in den Repo-Checkout kopiert, committet und gepusht werden — sonst veraltet das Repo. Vor dem Committen: `cd <repo> && git status`. Pushen nur nach expliziter User-Bestätigung.
+
+**Skills/Plugins/Repos hinzufügen oder kuratieren:** über den `dotclaude-lab` Skill — `/dotclaude-lab list|try|add|promote|demote|remove|update`. Niemals von Hand in `~/.claude/skills/` rumeditieren wenn das Ziel ein registrierter Upstream-Skill ist; stattdessen `registry.json` ändern und `update` laufen lassen.
 
 ## Read-before-Edit (Token-Sparregel)
 Vor jedem `Edit` oder `Write` auf eine bestehende Datei muss diese zuerst mit `Read` gelesen werden. Vor Änderungen an einer Funktion/Methode/Export: mit `Grep` alle Aufrufer suchen. Research vor Edit — blindes Editieren führt zu Retries und verbrannten Tokens. Angestrebtes Verhältnis: mindestens 4 Reads pro Edit.
@@ -44,12 +47,12 @@ Nur delegieren wenn der erwartete Output >20 Zeilen ist, sonst selbst machen:
 
 ## Skill-Hints
 
-Folgende globale Skills sind installiert. Bei passenden Aufgaben an sie denken:
+Bei passenden Aufgaben an die globalen Skills denken (welche tatsächlich da sind, hängt von `registry.json` ab — `/dotclaude-lab list` zeigt den aktuellen Stand):
 
-- **Video, Animation, Demo, Screencast** → Remotion-Skill nutzen (`remotion-best-practices`)
-- **Webseite anschauen, testen, Screenshot, Formular ausfüllen, Seite prüfen** → Browser-Skill nutzen (`browser-use`)
-- **UI bauen, Webseite gestalten, Frontend, Komponente, Landing Page** → Frontend-Design-Skill nutzen (`frontend-design`)
-- **Diagramme, Architektur-Übersichten, Diff-Reviews, Tabellen, visuelle Erklärungen** → Visual-Explainer nutzen (`visual-explainer`) — HTML statt ASCII bei 4+ Zeilen / 3+ Spalten
-- **Sessions als HTML-Replay teilen/dokumentieren** → claude-replay nutzen (`claude-replay`)
-- **MCP-Token sparen bei vielen Tools (80+)** → mcp2cli für on-demand Tool-Discovery statt nativer MCP-Schema-Injection
+- **Webseite anschauen, testen, Screenshot, Formular ausfüllen, Seite prüfen** → `browser-use` (required)
+- **UI bauen, Webseite gestalten, Frontend, Komponente, Landing Page** → `frontend-design` (required, plugin)
+- **Diagramme, Architektur-Übersichten, Diff-Reviews, Tabellen, visuelle Erklärungen** → `visual-explainer` (optional — `/dotclaude-lab try visual-explainer`)
+- **Video, Animation, Demo, Screencast** → `remotion-best-practices` (optional)
+- **dotclaude-Registry verwalten** (Skills/Plugins/Repos installieren, promoten, updaten) → `dotclaude-lab`
+- **MCP-Token sparen bei vielen Tools (80+)** → mcp2cli für on-demand Tool-Discovery
 - **Context-Window schonen** → Context Mode (MCP-Server, läuft automatisch) routet große Tool-Outputs durch Subprozesse

@@ -26,11 +26,10 @@ tasks/
 plans/
 downloads/
 
-# Plugins are installed via plugins.json, not tracked as files
+# Plugins/skills are installed via registry.json, not tracked as files
 home/plugins/
+.dotclaude-cache/
 
-# Runtime state created by hooks/HUD when running in this dir
+# Runtime state created by HUD when running in this dir
 .omc/
-home/hooks/**/.state.json
-home/hooks/**/*.log
 

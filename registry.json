@@ -1,0 +1,72 @@
+{
+  "$schema_version": 1,
+  "marketplaces": [
+    {
+      "name": "claude-plugins-official",
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    {
+      "name": "omc",
+      "source": "git",
+      "url": "https://github.com/Yeachan-Heo/oh-my-claudecode.git"
+    }
+  ],
+  "skills": [
+    {
+      "name": "browser-use",
+      "type": "git-file",
+      "ref": "https://github.com/browser-use/browser-use.git",
+      "subpath": "browser_use/skill_cli",
+      "description": "Browser automation via persistent daemon (~50ms latency). Navigate, fill forms, click, screenshot, extract data. CLI: browser-use open|state|click|input|screenshot|close.",
+      "status": "required"
+    },
+    {
+      "name": "visual-explainer",
+      "type": "git",
+      "ref": "https://github.com/nicobailon/visual-explainer.git",
+      "subpath": "plugins/visual-explainer",
+      "description": "Generate beautiful HTML pages for diagrams, diff reviews, plan reviews, slides, and data tables (mermaid + custom templates).",
+      "status": "optional"
+    },
+    {
+      "name": "remotion-best-practices",
+      "type": "skills-cli",
+      "ref": "https://github.com/remotion-dev/skills",
+      "skill": "remotion-best-practices",
+      "description": "Domain knowledge for building videos with Remotion + React: animations, audio, captions, FFmpeg, transitions, etc. Installs via 'npx skills add'.",
+      "status": "optional"
+    }
+  ],
+  "plugins": [
+    {
+      "name": "oh-my-claudecode",
+      "marketplace": "omc",
+      "description": "Plugin suite from Yeachan-Heo: /ask delegation, agent teams, statusline, helpers.",
+      "status": "required"
+    },
+    {
+      "name": "frontend-design",
+      "marketplace": "claude-plugins-official",
+      "description": "Anthropic's frontend-design skill: distinctive, production-grade UI generation that avoids generic AI aesthetics.",
+      "status": "required"
+    }
+  ],
+  "repos": [
+    {
+      "name": "peon-ping",
+      "url": "https://github.com/PeonPing/peon-ping",
+      "description": "Warcraft III Peon voice notifications + on-screen banners for Claude Code hooks. Sound packs (Peon, Kerrigan, GLaDOS, Meeseeks, ...). Has its own installer.",
+      "install_cmd_unix": "curl -fsSL https://raw.githubusercontent.com/PeonPing/peon-ping/main/install.sh | bash",
+      "install_cmd_windows": "iwr -Uri https://raw.githubusercontent.com/PeonPing/peon-ping/main/install.ps1 -UseBasicParsing | iex",
+      "status": "optional"
+    }
+  ],
+  "npm_globals": [
+    {
+      "name": "codeburn",
+      "description": "Codeburn CLI (global npm package).",
+      "status": "required"
+    }
+  ]
+}
