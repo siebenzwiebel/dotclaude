@@ -1,0 +1,17 @@
+{
+  "marketplaces": [
+    {
+      "name": "claude-plugins-official",
+      "source": "github",
+      "repo": "anthropics/claude-plugins-official"
+    },
+    {
+      "name": "omc",
+      "source": "git",
+      "url": "https://github.com/Yeachan-Heo/oh-my-claudecode.git"
+    }
+  ],
+  "plugins": [
+    { "name": "oh-my-claudecode", "marketplace": "omc" }
+  ]
+}

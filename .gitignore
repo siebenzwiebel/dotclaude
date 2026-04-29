@@ -1,0 +1,36 @@
+# Never commit secrets
+.credentials.json
+*.token
+*.pem
+id_rsa*
+id_ed25519*
+
+# Machine-local
+settings.local.json
+.session-stats.json*
+stats-cache.json
+scheduled_tasks.lock
+
+# Runtime state
+cache/
+projects/
+sessions/
+history.jsonl
+file-history/
+shell-snapshots/
+backups/
+telemetry/
+paste-cache/
+session-env/
+tasks/
+plans/
+downloads/
+
+# Plugins are installed via plugins.json, not tracked as files
+home/plugins/
+
+# Runtime state created by hooks/HUD when running in this dir
+.omc/
+home/hooks/**/.state.json
+home/hooks/**/*.log
+
