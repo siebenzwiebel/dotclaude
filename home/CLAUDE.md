@@ -1,5 +1,8 @@
 # Globale Claude Code Anweisungen
 
+## Tool-Timeouts (immer setzen)
+Bei jedem `Bash`- und `PowerShell`-Aufruf einen expliziten `timeout` setzen (in ms). Default-Werte: ~15000 für Syntax-Checks/Parser, ~30000 für Builds/Pakete, ~120000 nur wenn wirklich nötig. Lange Operationen (`npm install`, `git clone` großer Repos, Tests) gehören in `run_in_background`. Grund: ohne Timeout hängen abgestürzte Subprozesse den ganzen Tool-Call auf, Ergebnisse verschwinden als „internal error". Nie ohne Timeout schicken.
+
 ## Dotclaude-Repo (Selbstpflege)
 `~/.claude/` wird über das dotclaude-Repo gepflegt. Lokaler Checkout: `$DOTCLAUDE_REPO` falls gesetzt, sonst `~/dotclaude` oder `~/claude-dotfiles`. Mapping inline-getrackter Dateien: `<repo>/home/<x>` ⇄ `~/.claude/<x>`.
 
