@@ -75,20 +75,21 @@ so `update` can `git pull` them in place.
 
 ## Managing entries from inside Claude Code
 
-The `dotclaude-lab` skill is registered automatically by `install.sh`. Use it
-in any Claude Code session:
+The `dotclaude-lab` skill is registered automatically by `install.sh`. Each
+sub-command is also exposed as a namespaced slash-command under `/dc:*` for
+autocomplete (type `/dc` and Claude Code lists them):
 
-| Command | Effect |
-|---------|--------|
-| `/dotclaude-lab list` | Show all entries with status and install state |
-| `/dotclaude-lab try <name>` | Install a non-required entry locally to test it (no commit) |
-| `/dotclaude-lab untry <name>` | Remove a test installation |
-| `/dotclaude-lab add <type> <ref> [--status ...] [--description ...]` | Add a new entry (default optional), commit |
-| `/dotclaude-lab recommend <name>` | Set `recommended`, commit |
-| `/dotclaude-lab promote <name>` | Step up: optional → recommended → required, commit |
-| `/dotclaude-lab demote <name>` | Step down: required → recommended → optional, commit |
-| `/dotclaude-lab remove <name>` | Delete entry from registry, commit |
-| `/dotclaude-lab update [<name>]` | Pull upstream updates for installed entries |
+| Slash-command | Skill equivalent | Effect |
+|---|---|---|
+| `/dc:list` | `/dotclaude-lab list` | Show all entries with status and install state |
+| `/dc:try <name>` | `/dotclaude-lab try <name>` | Install a non-required entry locally to test it (no commit) |
+| `/dc:untry <name>` | `/dotclaude-lab untry <name>` | Remove a test installation |
+| `/dc:add <type> <ref> [...]` | `/dotclaude-lab add ...` | Add a new entry (default optional), commit |
+| `/dc:recommend <name>` | `/dotclaude-lab recommend <name>` | Set `recommended`, commit |
+| `/dc:promote <name>` | `/dotclaude-lab promote <name>` | Step up: optional → recommended → required, commit |
+| `/dc:demote <name>` | `/dotclaude-lab demote <name>` | Step down: required → recommended → optional, commit |
+| `/dc:remove <name>` | `/dotclaude-lab remove <name>` | Delete entry from registry, commit |
+| `/dc:update [<name>]` | `/dotclaude-lab update [<name>]` | Pull upstream updates for installed entries |
 
 All mutations commit `registry.json` and (by default) auto-push to the remote
 so other machines see the change. Disable via `settings.autoPush: false` in

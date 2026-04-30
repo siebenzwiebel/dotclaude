@@ -27,8 +27,10 @@ If the user clones this repo onto a new machine and asks you to "set it up",
 
 3. After install, tell the user to **restart Claude Code** so the new settings,
    commands, skills, hooks and plugins are picked up. Mention they can manage
-   the lab and update upstream skills via
-   `/dotclaude-lab list|try|recommend|promote|update`.
+   the lab and update upstream skills via either the `dotclaude-lab` skill
+   (`/dotclaude-lab list|try|recommend|promote|update`) or the matching
+   namespaced slash-commands (`/dc:list`, `/dc:try`, `/dc:promote`, ...) that
+   autocomplete after typing `/dc`.
 
 ## What is tracked vs. not
 
@@ -60,3 +62,8 @@ behalf): `list`, `try`, `untry`, `add`, `recommend`, `promote`, `demote`,
 semantics, including the three-status model
 (`required` / `recommended` / `optional`) and the auto-push behavior controlled
 by `settings.autoPush` in `registry.json`.
+
+Each sub-command is also exposed as a namespaced slash-command under
+`home/commands/dc/<cmd>.md` so users get autocomplete by typing `/dc`. The
+files are thin wrappers that delegate to the `dotclaude-lab` skill — keep
+them in sync when you add or rename a skill command.
