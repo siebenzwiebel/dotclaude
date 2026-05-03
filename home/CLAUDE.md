@@ -48,6 +48,15 @@ Nur delegieren wenn der erwartete Output >20 Zeilen ist, sonst selbst machen:
 2. Ergebnis lesen und in die Zieldatei schreiben oder dem User zeigen
 3. Nicht nachbearbeiten außer bei offensichtlichen Fehlern
 
+## MCP-Server-Optimierung (mcp2cli)
+
+Bei neuen MCP-Servern automatisch checken: Wenn der Server **>20 nicht-deferred Tools** mitbringt, aktiv die Konvertierung via `mcp2cli` vorschlagen — Token-Ersparnis ~94–96% bei der Tool-Discovery. Ablauf nach User-OK:
+1. MCP→Skill via mcp2cli generieren (Repo liegt unter `~/.claude/.dotclaude-cache/repos/mcp2cli`)
+2. Original-MCP-Server in der Claude-Config deaktivieren (sonst werden beide Schemas geladen)
+3. User-Hinweis: Claude muss mit `--plugin-dir ~/.claude/.dotclaude-cache/repos/mcp2cli` neu gestartet werden
+
+Bei ≤20 Tools, oder wenn die Tools eh über das Deferred-Tools-System (`ToolSearch`) geladen werden: **nicht** ansprechen — lohnt sich nicht. Faustregel: Connector-MCPs (Linear, Notion, Asana, …) und große Tool-Suiten sind Kandidaten; kleine eigenbau-MCPs nicht.
+
 ## Skill-Hints
 
 Bei passenden Aufgaben an die globalen Skills denken (welche tatsächlich da sind, hängt von `registry.json` ab — `/dotclaude-lab list` zeigt den aktuellen Stand):
@@ -57,5 +66,4 @@ Bei passenden Aufgaben an die globalen Skills denken (welche tatsächlich da sin
 - **Diagramme, Architektur-Übersichten, Diff-Reviews, Tabellen, visuelle Erklärungen** → `visual-explainer` (optional — `/dotclaude-lab try visual-explainer`)
 - **Video, Animation, Demo, Screencast** → `remotion-best-practices` (optional)
 - **dotclaude-Registry verwalten** (Skills/Plugins/Repos installieren, promoten, updaten) → `dotclaude-lab`
-- **MCP-Token sparen bei vielen Tools (80+)** → mcp2cli für on-demand Tool-Discovery
 - **Context-Window schonen** → Context Mode (MCP-Server, läuft automatisch) routet große Tool-Outputs durch Subprozesse
