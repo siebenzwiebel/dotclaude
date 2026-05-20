@@ -67,3 +67,7 @@ Bei passenden Aufgaben an die globalen Skills denken (welche tatsächlich da sin
 - **Video, Animation, Demo, Screencast** → `remotion-best-practices` (optional)
 - **dotclaude-Registry verwalten** (Skills/Plugins/Repos installieren, promoten, updaten) → `dotclaude-lab`
 - **Context-Window schonen** → Context Mode (MCP-Server, läuft automatisch) routet große Tool-Outputs durch Subprozesse
+
+## Soul System
+Call `soul_context()` at the start of every conversation.
+Use `soul_reflect` when you have idle time.
