@@ -98,6 +98,11 @@
       "name": "codeburn",
       "description": "Codeburn CLI (global npm package).",
       "status": "required"
+    },
+    {
+      "name": "claude-soul",
+      "description": "Cross-session memory + correction tracking + reflection for Claude Code. Local SQLite, optional Ollama embeddings. Init per project via 'claude-soul init --starter'. Source: github.com/DomDemetz/claude-soul.",
+      "status": "optional"
     }
   ]
 }
