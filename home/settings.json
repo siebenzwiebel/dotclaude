@@ -1,6 +1,8 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
-    "defaultMode": "default",
     "allow": [
       "Bash(bash ~/.claude-time-tracker/:*)",
       "Bash(git -C * log --oneline --since=:*)",
@@ -8,7 +10,8 @@
       "Bash(awk * ~/.claude-sessions.log:*)",
       "Bash(echo * >> ~/.claude-sessions.log:*)",
       "Bash(for proj in *)"
-    ]
+    ],
+    "defaultMode": "default"
   },
   "model": "opus[1m]",
   "hooks": {
@@ -29,6 +32,14 @@
           {
             "type": "command",
             "command": "~/.claude-time-tracker/hooks/session_start.sh"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"C:/Program Files/nodejs/node.exe\" \"C:/Users/drewers/.claude/hooks/context-mode-cache-heal.mjs\""
           }
         ]
       }
@@ -74,6 +85,31 @@
             "type": "command",
             "command": "powershell -NoProfile -NonInteractive -File \"C:\\Users\\drewers\\.claude\\hooks\\peon-ping\\peon.ps1\"",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\drewers\\AppData\\Roaming\\npm\\node_modules\\claude-soul\\node_modules\\claude-soul-server\\dist\\hooks\\on-stop.js\"",
+            "timeout": 15000
+          },
+          {
+            "type": "command",
+            "command": "bash C:\\Users\\drewers\\.soul\\hooks/session-journal.sh",
+            "timeout": 3000
+          },
+          {
+            "type": "command",
+            "command": "node C:\\Users\\drewers\\.soul\\hooks/session-agency.js",
+            "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\drewers\\AppData\\Roaming\\npm\\node_modules\\claude-soul\\node_modules\\claude-soul-server\\dist\\cli\\index-new.js\"",
+            "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "node \"C:\\Users\\drewers\\AppData\\Roaming\\npm\\node_modules\\claude-soul\\node_modules\\claude-soul-server\\dist\\hooks\\correction-extractor.js\"",
+            "timeout": 5000
           }
         ]
       }
@@ -147,7 +183,41 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash C:\\Users\\drewers\\.soul\\hooks/session-scratchpad.sh",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash C:\\Users\\drewers\\.soul\\hooks/write-guard.sh",
+            "timeout": 2000
+          }
+        ]
+      }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "node C:/Users/drewers/.claude/hud/omc-hud.mjs"
+  },
+  "enabledPlugins": {
+    "oh-my-claudecode@omc": true,
+    "frontend-design@claude-plugins-official": true,
+    "context-mode@context-mode": true,
+    "rtd-design-system@rd": true
   },
   "extraKnownMarketplaces": {
     "omc": {
@@ -155,19 +225,24 @@
         "source": "git",
         "url": "https://github.com/Yeachan-Heo/oh-my-claudecode.git"
       }
+    },
+    "context-mode": {
+      "source": {
+        "source": "github",
+        "repo": "mksglu/context-mode"
+      }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
     }
   },
   "language": "German",
+  "effortLevel": "xhigh",
   "autoUpdatesChannel": "latest",
-  "voiceEnabled": true,
-  "enabledPlugins": {
-    "oh-my-claudecode@omc": true
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "node C:/Users/drewers/.claude/hud/omc-hud.mjs"
-  },
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  }
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "voiceEnabled": true
 }

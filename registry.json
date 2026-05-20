@@ -95,14 +95,14 @@
   ],
   "npm_globals": [
     {
-      "name": "codeburn",
-      "description": "Codeburn CLI (global npm package).",
+      "name": "claude-soul",
+      "description": "Cross-session memory + correction tracking + framework evolution for Claude Code. Writes ~/.soul/ on first 'claude-soul init --starter --skip-identity'. Registers MCP server + hooks in ~/.claude/settings.json (which is also tracked by this repo — keep in sync). Optional: Ollama + 'ollama pull nomic-embed-text' for semantic memory. Source: github.com/DomDemetz/claude-soul.",
       "status": "required"
     },
     {
-      "name": "claude-soul",
-      "description": "Cross-session memory + correction tracking + reflection for Claude Code. Local SQLite, optional Ollama embeddings. Init per project via 'claude-soul init --starter'. Source: github.com/DomDemetz/claude-soul.",
-      "status": "optional"
+      "name": "codeburn",
+      "description": "Codeburn CLI (global npm package).",
+      "status": "required"
     }
   ]
 }
