@@ -93,12 +93,12 @@
           },
           {
             "type": "command",
-            "command": "bash C:\\Users\\drewers\\.soul\\hooks/session-journal.sh",
+            "command": "bash C:/Users/drewers/.soul/hooks/session-journal.sh",
             "timeout": 3000
           },
           {
             "type": "command",
-            "command": "node C:\\Users\\drewers\\.soul\\hooks/session-agency.js",
+            "command": "node C:/Users/drewers/.soul/hooks/session-agency.js",
             "timeout": 10000
           },
           {
@@ -190,7 +190,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash C:\\Users\\drewers\\.soul\\hooks/session-scratchpad.sh",
+            "command": "bash C:/Users/drewers/.soul/hooks/session-scratchpad.sh",
             "timeout": 2000
           }
         ]
@@ -202,7 +202,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash C:\\Users\\drewers\\.soul\\hooks/write-guard.sh",
+            "command": "bash C:/Users/drewers/.soul/hooks/write-guard.sh",
             "timeout": 2000
           }
         ]
